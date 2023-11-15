@@ -72,7 +72,7 @@ class WSIHandler:
         assert config["annotation_overlap"] >= 0 and config["overlap"] < 1, "Annotation overlap must be between 1 and 0"
 
         return config
-    
+
     def check_resolution(self, slide_path: str, res_range=[0.22, 0.27]):
         try:
             self.slide = openslide.OpenSlide(slide_path)
@@ -80,7 +80,7 @@ class WSIHandler:
             print("Error when reading slide", slide_path)
             return False
 
-        try: 
+        try:
             scanner, res_x, res_y = self.init_patch_calibration()
         except:
             del self.slide
@@ -91,7 +91,7 @@ class WSIHandler:
         if mpp < min(res_range) or mpp > max(res_range):
             del self.slide
             return False
-        
+
         del self.slide
         return True
 
@@ -176,9 +176,9 @@ class WSIHandler:
 
         tissue_mask = tissue_detection.tissue_detection(image, remove_top_border)
 
-        mask_img = cv2.cvtColor(image, cv2.COLOR_RGBA2RGB) # Remove alpha channel
+        mask_img = cv2.cvtColor(image, cv2.COLOR_RGBA2RGB)  # Remove alpha channel
         contours, _ = cv2.findContours(tissue_mask, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(mask_img, contours, -1, (0,255,0), 3)
+        cv2.drawContours(mask_img, contours, -1, (0, 255, 0), 3)
 
         # result = cv2.bitwise_and(image, image, mask=tissue_mask)
 
@@ -457,7 +457,9 @@ class WSIHandler:
                                 {
                                     patch_nb: {
                                         "slide_name": slide_name,
-                                        "patch_path": os.path.join(label + ".zip", file_name) if zip_patches else os.path.join(label, file_name),
+                                        "patch_path": os.path.join(label + ".zip", file_name)
+                                        if zip_patches
+                                        else os.path.join(label, file_name),
                                         "label": label,
                                         "x_pos": global_x,
                                         "y_pos": global_y,
@@ -599,7 +601,9 @@ class WSIHandler:
                                     {
                                         patch_nb: {
                                             "slide_name": slide_name,
-                                            "patch_path": os.path.join(label + ".zip", file_name) if zip_patches else os.path.join(label, file_name),
+                                            "patch_path": os.path.join(label + ".zip", file_name)
+                                            if zip_patches
+                                            else os.path.join(label, file_name),
                                             "label": label,
                                             "tumor_coverage": label_percentage,
                                             "x_pos": global_x,
@@ -690,7 +694,7 @@ class WSIHandler:
 
         if save_mask:
             contours, _ = cv2.findContours(mask, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
-            cv2.drawContours(img, contours, -1, (0,255,0), 3)
+            cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
             file_name = os.path.join(self.config["output_path"], slide_name, "mask_img." + output_format)
             plt.imsave(file_name, img, format=output_format)
 
@@ -708,7 +712,7 @@ class WSIHandler:
         # convert to mpp
         res_x = factor / float(self.slide.properties["tiff.XResolution"])
         res_y = factor / float(self.slide.properties["tiff.YResolution"])
-        
+
         return scanner, res_x, res_y
 
     def init_aperio(self):
@@ -792,7 +796,8 @@ class WSIHandler:
 
         self.save_thumbnail(mask, level=level, slide_name=slide_name, output_format=self.config["output_format"])
 
-        import time 
+        import time
+
         start_time = time.time()
         # Calibrated or non calibrated patch sizes
         if self.config["calibration"]["use_non_pixel_lengths"]:
@@ -909,7 +914,9 @@ class WSIHandler:
                     slide_name = slide_name.split(".")[0]
                 if slide_name in slide_names:
                     selected_slides.append(slide)
-                    slide_names.remove(slide_name)  # Make sure mapping from Pseudonym in slide_information.csv to slide filename is unique!
+                    slide_names.remove(
+                        slide_name
+                    )  # Make sure mapping from Pseudonym in slide_information.csv to slide filename is unique!
             slide_list = selected_slides
             print("Processing", len(slide_list), "selected slides")
             print("###############################################")
