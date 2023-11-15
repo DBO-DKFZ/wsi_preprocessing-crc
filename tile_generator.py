@@ -1,41 +1,24 @@
 # System
-import json
-import multiprocessing
 import os
+from pathlib import Path
 import shutil
-
-# Zipfile
-import io
 import zipfile
 
 # Advanced
-import xml.etree.ElementTree as ET
-from argparse import ArgumentParser
-from pathlib import Path
-import json
-import pandas as pd
 import multiprocessing
-import cv2
-import matplotlib.pyplot as plt
+import xml.etree.ElementTree as ET
+import json
 from tqdm import tqdm
 
-# Numpy
-import numpy as np
-
 # Image Processing
-from PIL import Image
-
-# # Fix to get the dlls to load properly under python >= 3.8 and windows
-script_dir = os.path.dirname(os.path.realpath(__file__))
-try:
-    openslide_dll_path = os.path.join(script_dir, "..", "openslide-win64-20171122", "bin")
-    os.add_dll_directory(openslide_dll_path)
-    # print(openslide_dll_path)
-
-except Exception as e:
-    pass
-
 import openslide
+from PIL import Image
+import cv2
+
+# Data
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 # Custom
 import tissue_detection
@@ -44,7 +27,16 @@ _MULTIPROCESS = True
 
 
 class WSIHandler:
-    def __init__(self, config_path="resources/config.json"):
+    def __init__(
+        self,
+        config: dict,
+    ):
+        assert 1 >= config["tissue_coverage"] >= 0, "Tissue coverage must be between 1 and 0"
+        assert config["blocked_threads"] >= 0
+        assert config["patches_per_tile"] >= 1, "Patches per tile must be >= 1"
+        assert 0 <= config["overlap"] < 1, "Overlap must be between 1 and 0"
+        assert config["annotation_overlap"] >= 0 and config["overlap"] < 1, "Annotation overlap must be between 1 and 0"
+
         self.slide = None
         self.output_path = None
         self.total_width = 0
@@ -53,25 +45,12 @@ class WSIHandler:
         self.current_level = 0
         self.annotation_list = None
         self.annotation_dict = None
-        self.config = self.load_config(config_path)
+        self.config = config
         self.annotated_only = self.config["save_annotated_only"]
         self.scanner = None
 
         self.res_x = None
         self.res_y = None
-
-    def load_config(self, config_path):
-        assert os.path.exists(config_path), "Cannot find " + config_path
-        with open(config_path) as json_file:
-            config = json.load(json_file)
-
-        assert 1 >= config["tissue_coverage"] >= 0, "Tissue coverage must be between 1 and 0"
-        assert config["blocked_threads"] >= 0
-        assert config["patches_per_tile"] >= 1, "Patches per tile must be >= 1"
-        assert 0 <= config["overlap"] < 1, "Overlap must be between 1 and 0"
-        assert config["annotation_overlap"] >= 0 and config["overlap"] < 1, "Annotation overlap must be between 1 and 0"
-
-        return config
 
     def check_resolution(self, slide_path: str, res_range=[0.22, 0.27]):
         try:
@@ -168,7 +147,6 @@ class WSIHandler:
         return image, level
 
     def apply_tissue_detection(self, level=None, show=False, remove_top_border=False):
-
         if level is not None:
             image, level = self.get_img(level, show)
         else:
@@ -190,7 +168,6 @@ class WSIHandler:
         return tissue_mask, level
 
     def determine_tile_size(self, level):
-
         if self.config["calibration"]["use_non_pixel_lengths"]:
             tile_size_0 = (self.config["calibration"]["patch_size_microns"] / self.res_x) * self.config[
                 "patches_per_tile"
@@ -206,7 +183,6 @@ class WSIHandler:
         return tile_size
 
     def get_relevant_tiles(self, tissue_mask, tile_size, min_coverage, level, show=False):
-
         rows, row_residue = divmod(tissue_mask.shape[0], tile_size)
         cols, col_residue = divmod(tissue_mask.shape[1], tile_size)
 
@@ -235,7 +211,6 @@ class WSIHandler:
         # +1 to solve border issues
         for row in range(rows):
             for col in range(cols):
-
                 tile = tissue_mask[
                     row * tile_size : row * tile_size + tile_size, col * tile_size : col * tile_size + tile_size
                 ]
@@ -294,7 +269,6 @@ class WSIHandler:
         return relevant_tiles_dict
 
     def check_for_label(self, label_dict, annotation_mask):
-
         label_percentage = np.count_nonzero(annotation_mask) / annotation_mask.size
 
         for label in label_dict:
@@ -346,7 +320,6 @@ class WSIHandler:
         save_patches=False,
         zip_patches=False,
     ):
-
         scaling_factor = int(self.slide.level_downsamples[level])
 
         patch_dict = {}
@@ -395,7 +368,6 @@ class WSIHandler:
                 stop_x = False
 
                 for col in range(cols):
-
                     # Calculate patch coordinates
                     patch_x = int(col * (patch_size_px_x - px_overlap_x))
                     patch_y = int(row * (patch_size_px_y - px_overlap_y))
@@ -433,7 +405,6 @@ class WSIHandler:
 
                     if label is not None:
                         if self.annotated_only and annotated or not self.annotated_only:
-
                             file_name = slide_name + "_" + str(global_x) + "_" + str(global_y) + "." + output_format
 
                             if save_patches:
@@ -544,7 +515,6 @@ class WSIHandler:
                     stop_x = False
 
                     for col in range(cols):
-
                         # Calculate patch coordinates
                         patch_x = int(col * (patch_size - px_overlap))
                         patch_y = int(row * (patch_size - px_overlap))
@@ -584,7 +554,6 @@ class WSIHandler:
                         if label is not None:
                             if self.annotated_only and annotated or not self.annotated_only:
                                 if slide_name is not None:
-
                                     file_name = (
                                         slide_name + "_" + str(global_x) + "_" + str(global_y) + "." + output_format
                                     )
@@ -622,7 +591,6 @@ class WSIHandler:
         return patch_dict
 
     def export_dict(self, dict, metadata_format, filename):
-
         if metadata_format == "json":
             file = os.path.join(self.output_path, filename + ".json")
             with open(file, "w") as json_file:
@@ -669,7 +637,6 @@ class WSIHandler:
             json.dump(dict, json_file, indent=4)
 
     def save_thumbnail(self, mask, slide_name, level, output_format="png", save_mask=True):
-
         remap_color = ((0, 0, 0), (255, 255, 255))
 
         process_level = level
@@ -699,7 +666,6 @@ class WSIHandler:
             plt.imsave(file_name, img, format=output_format)
 
     def init_generic_tiff(self):
-
         unit_dict = {"milimeter": 1000, "centimeter": 10000, "meter": 1000000}
         scanner = "generic-tiff"
 
@@ -724,7 +690,6 @@ class WSIHandler:
         return scanner, res_x, res_y
 
     def init_patch_calibration(self):
-
         properties = list(self.slide.properties)
 
         # check scanner type
@@ -740,7 +705,6 @@ class WSIHandler:
         return scanner, res_x, res_y
 
     def process_slide(self, slide_p: Path):
-
         slide_name = slide_p.stem
         if "TCGA" in slide_name:  # Remove case_id from slide_name
             slide_name = slide_name.split(".")[0]
@@ -755,7 +719,6 @@ class WSIHandler:
             self.config["annotation_dir"], slide_name + "." + self.config["annotation_file_format"]
         )
         if os.path.exists(annotation_path):
-
             annotated = True
             self.annotation_dict = self.load_annotation(annotation_path)
         else:
@@ -847,7 +810,6 @@ class WSIHandler:
         #     print("Error in slide", slide_name, "error is:", e)
 
     def slides2patches(self):
-
         extensions = [".tif", ".svs"]
         slide_list = []
 
@@ -994,9 +956,17 @@ class WSIHandler:
 
 
 if __name__ == "__main__":
+    from argparse import ArgumentParser
+
     parser = ArgumentParser()
-    parser.add_argument("--config", required=True)
+    parser.add_argument("--config", type=str, required=True)
     args = parser.parse_args()
 
-    slide_handler = WSIHandler(config_path=args.config_path)
+    assert os.path.exists(args.config), "Cannot find " + args.config
+    with open(args.config) as json_file:
+        config = json.load(json_file)
+
+    # TODO: Switch from json configs to yaml configs with jsonargparse
+
+    slide_handler = WSIHandler(config=config)
     slide_handler.slides2patches()
