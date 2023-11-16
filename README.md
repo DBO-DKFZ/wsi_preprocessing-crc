@@ -1,5 +1,8 @@
 # Processing and tiling of histological slides
 
+[![python](https://img.shields.io/badge/-Python_3.9-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![black](https://img.shields.io/badge/Code%20Style-Black-black.svg?labelColor=gray)](https://black.readthedocs.io/en/stable/)
+
 ## Repository setup
 
 We suggest to use *miniconda* as package manager for your system. Create and activate conda environment with:
