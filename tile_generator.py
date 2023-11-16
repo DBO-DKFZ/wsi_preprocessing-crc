@@ -611,9 +611,9 @@ class WSIHandler:
             shutil.rmtree(os.path.join(self.output_path, dir))
 
     def export_slide_info(self, slide_p: Path, slide_name: str, scaling_factor: int):
-        if self.config["slideinfo_dir"] is not None:
-            slideinfo_file = Path(self.config["slideinfo_dir"]) / "slide_information.csv"
-            assert slideinfo_file.is_file(), "slide_information.csv does not exist"
+        if self.config["slideinfo_file"] is not None:
+            slideinfo_file = Path(self.config["slideinfo_file"])
+            assert slideinfo_file.is_file(), "Provided slideinfo .csv file does not exist"
             slide_df = pd.read_csv(slideinfo_file, dtype=str)
             if "Addition" in slide_df.columns:
                 slide_df["Pseudonym"] = slide_df["Pseudonym"] + slide_df["Addition"].fillna("")
@@ -861,9 +861,9 @@ class WSIHandler:
             slide_list = annotated_slides
             print("Processing annotated slides only")
 
-        if self.config["slideinfo_dir"] is not None:
-            slideinfo_file = Path(self.config["slideinfo_dir"]) / "slide_information.csv"
-            assert slideinfo_file.is_file(), "slide_information.csv does not exist"
+        if self.config["slideinfo_file"] is not None:
+            slideinfo_file = Path(self.config["slideinfo_file"])
+            assert slideinfo_file.is_file(), "Provided slideinfo .csv file does not exist"
             slide_df = pd.read_csv(slideinfo_file, dtype=str)
             if "Addition" in slide_df.columns:
                 slide_df["Pseudonym"] = slide_df["Pseudonym"] + slide_df["Addition"].fillna("")

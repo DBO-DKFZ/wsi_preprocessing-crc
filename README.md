@@ -2,10 +2,11 @@
 
 ## Repository setup
 
-We suggest to use `conda` as package manager for your system. Create conda environment with:
+We suggest to use *miniconda* as package manager for your system. Create and activate conda environment with:
 
 ```bash
 conda env create -f environment.yml
+conda activate wsi-pre2
 ```
 
 ## Run tiling with provided config files
@@ -13,7 +14,7 @@ conda env create -f environment.yml
 The main script to run is `tile_generator.py`. We provide configs in the `configs/` folder which generate tables of patch locations with the corresponding pixel sizes. The tables are then stored as `.csv` files for each slide in the configured `output_path`. 
 By default multiprocessing is enabled, such that multiple slides can be processed simultaneously.
 
-The tiling of TCGA slides with `patch_size=256` can be started as follows:
+As example the tiling of TCGA slides with `patch_size=256` can be started as follows:
 ```bash
 python tile_generator.py --config configs/tcga-crc_256.json
 ```
@@ -42,7 +43,7 @@ The table shows descriptions for the most important config parameters:
 | resize | Whether to resize the patches in micrometers to the given patch_size |
 | dataset | Provide name for the dataset |
 | slides_dir | Directory where the different slides and subdirs are located  | 
-| slideinfo_dir | Provide a "slide_information.csv" file with filenames and labels | 
+| slideinfo_file | Provide a .csv file with filenames and labels | 
 | annotation_dir | Directory where the annotations are located |
 | annotation_file_format | File format of the input annotations ("xml","geojson")| 
 | output_path | Output directory to where the resulting files will be stored |

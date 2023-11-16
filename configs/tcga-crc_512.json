@@ -18,7 +18,7 @@
     },
     "dataset": "TCGA-CRC",
     "slides_dir": "$TCGA_ROOT_DIR",
-    "slideinfo_dir": "$SLIDE_PROCESS_DIR/TCGA-CRC-SCalib",
+    "slideinfo_file": "$SLIDE_PROCESS_DIR/TCGA-CRC-SCalib/slide_information.csv",
     "annotation_dir": "",
     "annotation_file_format": "xml",
     "output_path": "$SLIDE_PROCESS_DIR/TCGA-CRC-SCalib/patches_512",
