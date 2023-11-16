@@ -966,7 +966,13 @@ if __name__ == "__main__":
     with open(args.config) as json_file:
         config = json.load(json_file)
 
-    # TODO: Switch from json configs to yaml configs with jsonargparse
+    # Parse and replace environment variables
+    for key, value in config.items():
+        if isinstance(value, str) and "$" in value:
+            env_key = value.split("/")[0].split("$")[-1]
+            env_val = os.environ[env_key]
+            value = env_val + "/" + "/".join(value.split("/")[1:])
+            config[key] = value
 
     slide_handler = WSIHandler(config=config)
     slide_handler.slides2patches()
