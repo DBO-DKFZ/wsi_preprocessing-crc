@@ -1,24 +1,20 @@
 # System
-import os
-from pathlib import Path
-import shutil
-import zipfile
-
-# Advanced
-import multiprocessing
-import xml.etree.ElementTree as ET
 import json
-from tqdm import tqdm
+import multiprocessing
+import os
+import shutil
+import xml.etree.ElementTree as ET
+import zipfile
+from pathlib import Path
 
-# Image Processing
-import openslide
-from PIL import Image
+# Libraries
 import cv2
-
-# Data
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import openslide
+import pandas as pd
+from PIL import Image
+from tqdm import tqdm
 
 # Custom
 import tissue_detection
@@ -474,7 +470,7 @@ class WSIHandler:
             if self.annotated_only and not tile_dict[tile_key]["annotated"]:
                 pass
             else:
-                # ToDo: rows and cols arent calculated correctly, instead a quick fix by using breaks was applied
+                # TODO: rows and cols aren't calculated correctly, instead a quick fix by using breaks was applied
 
                 tile_x = tile_dict[tile_key]["x"] * scaling_factor
                 tile_y = tile_dict[tile_key]["y"] * scaling_factor
@@ -666,7 +662,7 @@ class WSIHandler:
             plt.imsave(file_name, img, format=output_format)
 
     def init_generic_tiff(self):
-        unit_dict = {"milimeter": 1000, "centimeter": 10000, "meter": 1000000}
+        unit_dict = {"millimeter": 1000, "centimeter": 10000, "meter": 1000000}
         scanner = "generic-tiff"
 
         assert self.slide.properties["tiff.ResolutionUnit"] in unit_dict.keys(), (

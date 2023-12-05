@@ -1,11 +1,11 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import copy
+
 import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def tissue_detection(img, remove_top_border: bool = False):
-
     kernel_size = 3
 
     # remove alpha channel

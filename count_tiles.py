@@ -1,7 +1,7 @@
-import os
-from pathlib import Path
-from argparse import ArgumentParser
 import json
+import os
+from argparse import ArgumentParser
+from pathlib import Path
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -21,11 +21,11 @@ def main(config_path):
         n_other = len(os.listdir(os.path.join(slide_path, "non_tumor")))
         n_total = n_tumor + n_other
         frac = n_tumor / n_total * 100
-        print("{}: {}/{}, {:.4f}% tumor tiles of total tiles, name: {}".format(i, n_tumor, n_total, frac, slide))
+        print(f"{i}: {n_tumor}/{n_total}, {frac:.4f}% tumor tiles of total tiles, name: {slide}")
         total_tumor += n_tumor
         total_tiles += n_total
     frac = total_tumor / total_tiles * 100
-    print("Total: {}/{}, {:.4f}% tumor tiles of total tiles".format(total_tumor, total_tiles, frac))
+    print(f"Total: {total_tumor}/{total_tiles}, {frac:.4f}% tumor tiles of total tiles")
 
 
 if __name__ == "__main__":
