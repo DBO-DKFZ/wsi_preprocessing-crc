@@ -8,8 +8,32 @@
 We suggest to use *miniconda* as package manager for your system. Create and activate conda environment with:
 
 ```bash
-conda env create -f environment.yml
+conda env create -f environment.yaml
 conda activate wsi-pre2
+```
+
+## Code quality
+
+This repository uses pre-commit hooks and Github Actions for code quality, inspired by the [Lightning Hydra Template](https://github.com/ashleve/lightning-hydra-template).
+
+The pre-commit library comes installed with the conda environment. You should then setup pre-commit which uses the hooks from [.pre-commit-config.yaml](.pre-commit-config.yaml):
+
+```bash
+pre-commit install
+```
+
+After that your code will be automatically reformatted on every new commit.
+
+To reformat all files in the project use command:
+
+```bash
+pre-commit run -a
+```
+
+To update hook versions in [.pre-commit-config.yaml](.pre-commit-config.yaml) use:
+
+```bash
+pre-commit autoupdate
 ```
 
 ## Run tiling with provided config files
