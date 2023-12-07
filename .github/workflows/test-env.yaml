@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: anaconda-client-env
+          activate-environment: test
           environment-file: environment.yaml
           auto-activate-base: false
       - run: |
