@@ -1,3 +1,7 @@
+# Helpful resources:
+# 1.) https://autobencoder.com/2020-08-24-conda-actions/
+# 2.) https://github.com/conda-incubator/setup-miniconda
+
 name: Test Env
 
 on:
@@ -14,15 +18,17 @@ jobs:
       fail-fast: false
       matrix:
         # os: ["ubuntu-latest", "macos-latest", "windows-latest"]  # Openslide not available via conda on Windows
-        os: ["ubuntu-latest", "macos-latest"]
+        os: ["ubuntu-latest"]
+    defaults:
+      run:
+        shell: bash -el {0} # Need to adjust shell to remember profile
     steps:
       - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: test
+          activate-environment: anaconda-client-env
           environment-file: environment.yaml
           auto-activate-base: false
-      - shell: bash -l {0}
-        run: |
+      - run: |
           conda info
           conda list
