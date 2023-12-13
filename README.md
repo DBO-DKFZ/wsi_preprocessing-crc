@@ -8,11 +8,13 @@
 We suggest to use *miniconda* as package manager for your system. Create and activate conda environment with:
 
 ```bash
-conda env create -f environment.yaml
+conda env create -f environment.yml
 conda activate wsi-pre2
 ```
 
-## Code quality
+## Coding best practices
+
+The main branch is protected. Please checkout your own development branch and draft a Pull Request to commit changes.
 
 This repository uses pre-commit hooks and Github Actions for code quality, inspired by the [Lightning Hydra Template](https://github.com/ashleve/lightning-hydra-template).
 
